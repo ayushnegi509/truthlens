@@ -1,0 +1,23 @@
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+pydantic>=2.10.0
+pydantic-settings>=2.7.0
+python-multipart>=0.0.20
+aiofiles>=24.1.0
+numpy>=2.1.0
+python-dotenv>=1.0.1
+httpx>=0.28.1
+
+# --- Real AI inference (CPU-only) ---
+# Install CPU-only PyTorch (avoids downloading 2GB+ CUDA wheels)
+torch>=2.2.0
+torchvision>=0.17.0
+# If you need strict CPU-only, install manually:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+transformers>=4.40.0
+Pillow>=10.3.0
+opencv-python-headless>=4.9.0
+
+# --- Real audio inference (Wav2Vec2 deepfake audio classifier) ---
+librosa>=0.10.0
+soundfile>=0.12.0
