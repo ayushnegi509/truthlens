@@ -51,6 +51,13 @@ export interface BreakdownScores {
   metadata: number;
 }
 
+export interface AudioChunkScore {
+  chunk_index?: number;
+  start_time: number;
+  end_time: number;
+  score: number;
+}
+
 export interface FlaggedSegment {
   start_time: number;
   end_time: number;
@@ -63,7 +70,7 @@ export interface AnalyzeResponse {
   ai_probability: number;
   verdict: 'authentic' | 'suspicious' | 'fake' | 'inconclusive';
   confidence: number;
-  breakdown: BreakdownScores;
+  breakdown?: BreakdownScores;
   flagged_segments: FlaggedSegment[];
   input_type: 'file' | 'url';
   media_name: string;
@@ -77,6 +84,8 @@ export interface AnalyzeResponse {
   message?: string | null;
   /** Per-frame deepfake probabilities for video */
   frame_scores?: number[] | null;
+  /** Per-chunk deepfake probabilities for audio */
+  chunk_scores?: AudioChunkScore[] | null;
   /** Name of the classifier model used (e.g. 'Wav2Vec2 audio classifier') */
   model_name?: string | null;
 }

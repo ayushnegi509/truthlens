@@ -206,7 +206,9 @@ export function saveScanToHistory(
       aiProbability: response.ai_probability,
       verdict: response.verdict,
       confidence: response.confidence,
-      breakdown: { ...response.breakdown },
+      breakdown: response.breakdown
+        ? { ...response.breakdown }
+        : { face: 0, lip_sync: 0, audio: 0, texture: 0, metadata: 0 },
       flaggedSegmentsCount: response.flagged_segments?.length || 0,
       demoMode: response.demo_mode,
       rawResponse: response,
