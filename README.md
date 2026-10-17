@@ -24,12 +24,12 @@ At the core of the user experience is the signature **Green / Amber / Red Verdic
 - **EN / Hindi Localization**: Seamless English and Hindi language toggle (`EN | हिन्दी`) across the user interface.
 
 ### Known Issues
-- **False Positives**: Real photos, webcam recordings, and screenshots are sometimes flagged as AI (false positives).
+- **False Positives**: Real photos, videos, and screenshots are sometimes flagged as AI (false positives).
 - **Screenshots Without Faces**: Screenshots without faces give meaningless scores.
 - **Limited Accuracy**: Accuracy is limited across edge cases, compressed media, and varied lighting environments.
 
 ### Not Done Yet
-- **Real Audio Detection & Link Analysis**: Audio analysis and direct URL link ingestion are currently simulated or disabled in this version.
+- **Audio Detection Calibration**: Continuous calibration and dataset expansion across diverse acoustic environments.
 - **Face-Detection Gate & Threshold Calibration**: Enhanced face-detection gating and refined threshold calibration across diverse demographic distributions and media types.
 
 ---

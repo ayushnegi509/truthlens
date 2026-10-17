@@ -3,16 +3,11 @@ import { Navbar } from '../components/common/Navbar';
 import { Footer } from '../components/common/Footer';
 import { Button } from '../components/common/Button';
 import { Card } from '../components/common/Card';
-import { AnalysisTabs } from '../components/analysis/AnalysisTabs';
 import { DropzoneUpload } from '../components/analysis/DropzoneUpload';
-import { PasteLinkUpload } from '../components/analysis/PasteLinkUpload';
-import { RecordMediaUpload } from '../components/analysis/RecordMediaUpload';
-import { BatchUpload } from '../components/analysis/BatchUpload';
 import { MediaPreviewCard } from '../components/analysis/MediaPreviewCard';
 import { ProgressStepper } from '../components/analysis/ProgressStepper';
 import { validateMediaFile } from '../utils/fileValidation';
 import { 
-  AnalysisTab, 
   ValidatedMediaFile, 
   ScanDepth, 
   ScanPhase 
@@ -49,9 +44,7 @@ export const AnalysisPage: React.FC<AnalysisPageProps> = ({
   initialFile,
   onAnalysisCompleted,
 }) => {
-  const [activeTab, setActiveTab] = useState<AnalysisTab>('upload');
   const [selectedMedia, setSelectedMedia] = useState<ValidatedMediaFile | null>(null);
-  const [batchFiles, setBatchFiles] = useState<ValidatedMediaFile[]>([]);
   const [scanDepth, setScanDepth] = useState<ScanDepth>('deep');
   const [scanPhase, setScanPhase] = useState<ScanPhase>('idle');
 
@@ -59,7 +52,6 @@ export const AnalysisPage: React.FC<AnalysisPageProps> = ({
     if (initialFile) {
       validateMediaFile(initialFile, 'file').then((val) => {
         setSelectedMedia(val);
-        setActiveTab('upload');
       });
     }
   }, [initialFile]);
@@ -75,7 +67,7 @@ export const AnalysisPage: React.FC<AnalysisPageProps> = ({
   const isScanning = scanPhase !== 'idle';
 
   const handleStartAnalysis = () => {
-    if (!selectedMedia && (activeTab !== 'batch' || batchFiles.length === 0)) {
+    if (!selectedMedia) {
       return;
     }
     setScanPhase('uploading');
@@ -89,9 +81,7 @@ export const AnalysisPage: React.FC<AnalysisPageProps> = ({
     setSelectedMedia(null);
   };
 
-  const isReadyToAnalyze = 
-    (activeTab !== 'batch' && selectedMedia !== null && selectedMedia.status === 'valid') ||
-    (activeTab === 'batch' && batchFiles.length > 0 && batchFiles.some(f => f.status === 'valid'));
+  const isReadyToAnalyze = selectedMedia !== null && selectedMedia.status === 'valid';
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-navy-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
@@ -129,7 +119,7 @@ export const AnalysisPage: React.FC<AnalysisPageProps> = ({
               Deepfake Media Analysis
             </h1>
             <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl">
-              Inspect video, audio recordings, and images for generative artifacts, neural voice synthesis, and boundary warping.
+              Inspect video, audio, and image files for generative artifacts, neural voice synthesis, and boundary warping.
             </p>
           </div>
 
@@ -146,9 +136,7 @@ export const AnalysisPage: React.FC<AnalysisPageProps> = ({
           <ProgressStepper
             phase={scanPhase}
             onReset={handleResetAnalysis}
-            selectedMedia={selectedMedia || (batchFiles.length > 0 ? batchFiles[0] : null)}
-            isBatch={activeTab === 'batch'}
-            batchCount={batchFiles.length}
+            selectedMedia={selectedMedia}
             onAnalysisCompleted={(res) => {
               if (onAnalysisCompleted) {
                 onAnalysisCompleted(res);
@@ -158,76 +146,18 @@ export const AnalysisPage: React.FC<AnalysisPageProps> = ({
         ) : (
           /* ================= INTAKE & CONFIGURATION VIEW ================= */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* Left 8 Cols: Intake Tabs & Dropzone / Media Preview */}
+            {/* Left 8 Cols: Dropzone / Media Preview */}
             <div className="lg:col-span-8 space-y-6">
-              {/* Tab Switcher */}
-              <AnalysisTabs
-                activeTab={activeTab}
-                onTabChange={(tab) => {
-                  setActiveTab(tab);
-                  // Don't wipe media if changing tabs, allows flexible inspection
-                }}
-                disabled={isScanning}
-                batchCount={batchFiles.length}
-              />
-
-              {/* Dynamic Tab Body */}
-              <div className="space-y-6">
-                {activeTab === 'upload' && (
-                  <div className="space-y-4">
-                    {!selectedMedia ? (
-                      <DropzoneUpload
-                        onFileSelected={(media) => setSelectedMedia(media)}
-                        disabled={isScanning}
-                      />
-                    ) : (
-                      <MediaPreviewCard
-                        media={selectedMedia}
-                        onRemove={handleRemoveMedia}
-                        disabled={isScanning}
-                      />
-                    )}
-                  </div>
-                )}
-
-                {activeTab === 'link' && (
-                  <div className="space-y-4">
-                    {!selectedMedia ? (
-                      <PasteLinkUpload
-                        onMediaLoaded={(media) => setSelectedMedia(media)}
-                        disabled={isScanning}
-                      />
-                    ) : (
-                      <MediaPreviewCard
-                        media={selectedMedia}
-                        onRemove={handleRemoveMedia}
-                        disabled={isScanning}
-                      />
-                    )}
-                  </div>
-                )}
-
-                {activeTab === 'record' && (
-                  <div className="space-y-4">
-                    {!selectedMedia ? (
-                      <RecordMediaUpload
-                        onMediaRecorded={(media) => setSelectedMedia(media)}
-                        disabled={isScanning}
-                      />
-                    ) : (
-                      <MediaPreviewCard
-                        media={selectedMedia}
-                        onRemove={handleRemoveMedia}
-                        disabled={isScanning}
-                      />
-                    )}
-                  </div>
-                )}
-
-                {activeTab === 'batch' && (
-                  <BatchUpload
-                    files={batchFiles}
-                    onFilesChanged={(newFiles) => setBatchFiles(newFiles)}
+              <div className="space-y-4">
+                {!selectedMedia ? (
+                  <DropzoneUpload
+                    onFileSelected={(media) => setSelectedMedia(media)}
+                    disabled={isScanning}
+                  />
+                ) : (
+                  <MediaPreviewCard
+                    media={selectedMedia}
+                    onRemove={handleRemoveMedia}
                     disabled={isScanning}
                   />
                 )}
@@ -362,7 +292,7 @@ export const AnalysisPage: React.FC<AnalysisPageProps> = ({
 
                   {!isReadyToAnalyze && (
                     <p className="text-[11px] text-center text-slate-400 mt-2 font-mono">
-                      Select or record media above to enable analysis
+                      Upload media above to enable analysis
                     </p>
                   )}
                 </div>

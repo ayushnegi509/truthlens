@@ -23,8 +23,6 @@ interface ProgressStepperProps {
   phase: ScanPhase;
   onReset: () => void;
   selectedMedia?: ValidatedMediaFile | null;
-  isBatch?: boolean;
-  batchCount?: number;
   onAnalysisCompleted?: (response: AnalyzeResponse) => void;
 }
 
@@ -32,11 +30,9 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({
   phase,
   onReset,
   selectedMedia,
-  isBatch = false,
-  batchCount = 1,
   onAnalysisCompleted,
 }) => {
-  const mediaName = selectedMedia?.name || (isBatch ? `${batchCount} batch files` : 'suspect_media.mp4');
+  const mediaName = selectedMedia?.name || 'suspect_media.mp4';
   const [progressPercent, setProgressPercent] = useState(0);
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [logs, setLogs] = useState<ForensicLogMessage[]>([]);
@@ -80,21 +76,18 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({
     const now = new Date();
     const timeStr = `${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}.${now.getMilliseconds().toString().padStart(3, '0').substring(0, 2)}`;
     setLogs([
-      { timestamp: timeStr, text: `[INTAKE] Received ${isBatch ? `${batchCount} batch files` : mediaName} into memory buffer`, level: 'info' },
+      { timestamp: timeStr, text: `[INTAKE] Received ${mediaName} into memory buffer`, level: 'info' },
       { timestamp: timeStr, text: '[CRYPTO] Client-side SHA-256 pre-hashing verified. Ephemeral session initialized.', level: 'success' }
     ]);
 
-    const fileToUpload = selectedMedia?.file || null;
-    const urlToUpload = selectedMedia?.rawUrl || null;
-
-    let apiDataPromise: Promise<AnalyzeResponse>;
-    if (fileToUpload) {
-      apiDataPromise = analyzeMedia(fileToUpload, null);
-    } else if (urlToUpload) {
-      apiDataPromise = analyzeMedia(null, urlToUpload);
-    } else {
-      apiDataPromise = analyzeMedia(null, `https://example.com/stream/${mediaName}`);
+    const fileToUpload = selectedMedia?.file;
+    if (!fileToUpload) {
+      setErrorMsg('No media file provided for analysis.');
+      setIsRetrying(false);
+      return;
     }
+
+    const apiDataPromise = analyzeMedia(fileToUpload);
 
     const t1 = setTimeout(() => {
       setProgressPercent(38);
@@ -192,7 +185,7 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({
     return () => {
       if (cleanup) cleanup();
     };
-  }, [phase, selectedMedia, mediaName, isBatch, batchCount]);
+  }, [phase, selectedMedia, mediaName]);
 
   if (phase === 'idle') return null;
 

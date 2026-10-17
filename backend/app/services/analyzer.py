@@ -2,13 +2,10 @@
 analyzer.py
 -----------
 Shared helpers (verdict thresholds, breakdown builder, segment builder, SHA-256)
-and the fallback/simulated analysis path used for:
-  - Audio files  (always simulated — no audio model loaded)
-  - URL inputs   (always simulated — remote content not fetched)
-  - Error fallbacks in image_detector / video_detector
+and the fallback/simulated analysis path used for error fallbacks.
 
-For IMAGE and VIDEO inputs the real inference services
-(image_detector, video_detector) are called from the endpoint.
+For IMAGE, VIDEO, and AUDIO inputs the real inference services
+(image_detector, video_detector, audio_detector) are called from the endpoint.
 """
 
 from __future__ import annotations
@@ -140,7 +137,7 @@ def build_flagged_segments(
     return segments
 
 
-# ── Simulated analysis (audio / URL inputs) ──────────────────────────────────
+# ── Simulated analysis (fallback) ─────────────────────────────────────────
 
 def generate_simulated_analysis(
     seed_bytes: bytes,
@@ -150,7 +147,7 @@ def generate_simulated_analysis(
 ) -> AnalyzeResponse:
     """
     Purely deterministic / simulated analysis.
-    Used for audio files and URL inputs where no real model runs.
+    Used for fallback paths where model inference cannot run.
     Returns demo_mode=True and simulated=True.
     """
     sha256_hex = compute_sha256_bytes(seed_bytes)

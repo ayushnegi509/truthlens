@@ -54,8 +54,6 @@ At the core of the user experience is the signature **Green / Amber / Red Verdic
     - Ephemeral storage: audio files deleted immediately after analysis.
   - **Model load**: Loaded once at server startup alongside ViT model via FastAPI lifespan.
   - **Badge**: Teal badge `"Analyzed by Wav2Vec2 audio classifier (limited accuracy)"` displayed when `simulated: false`.
-- **Link Analysis**:
-  - *URL inputs*: Real URL link inspection is disabled in this version; returns clear message `"Link analysis is not available in this version. Download the file and upload it instead."` with no fake scores.
 
 ### Model Limitations
 > **Important**: This model is a research/demonstration classifier, not a production forensic tool.
@@ -173,17 +171,14 @@ truthlens/
 
 
 - [x] **2. Multi-Modal Scan / Upload Hub & Analysis Page** *(Completed)*
-  - **4-Mode Intake Tabs (`AnalysisTabs`)**:
-    - **Upload Tab (`DropzoneUpload`)**: Unified drag-and-drop supporting MP4/MOV/WEBM, WAV/MP3/AAC, and PNG/JPG/WEBP with active drag effects and file browsing.
-    - **Paste Link Tab (`PasteLinkUpload`)**: Direct media & social stream ingestion with URL validation, stream parser, and forensic demo sample links (Deepfake Video, Voice Clone Audio, Synthetic Portrait).
-    - **Record Live Tab (`RecordMediaUpload`)**: Real-time webcam video and microphone audio recorder using browser `MediaRecorder` / `getUserMedia` with device simulation fallback, live timer, crosshair HUD, and retake controls.
-    - **Batch Upload Tab (`BatchUpload`)**: Multi-file drag-and-drop intake queue with per-file status badges, thumbnail cards, cumulative size tracker (≤500MB), and file removal actions.
+  - **Single Unified Drag-and-Drop Dropzone (`DropzoneUpload`)**:
+    - Unified drag-and-drop supporting MP4/MOV/WEBM, WAV/MP3/AAC, and PNG/JPG/WEBP with active drag effects and file browsing.
   - **Interactive File Preview (`MediaPreviewCard`)**:
     - HTML5 video player with controls, audio player with animated acoustic waveform frequency bars, and spatial image viewer.
     - Real-time client-side cryptographic SHA-256 integrity hash calculation with one-click clipboard copy.
     - Expandable forensic metadata drawer detailing MIME types, file sizes, intake provenance, and ephemeral sandbox confirmation.
   - **Strict Format & Size Validation (`fileValidation`)**:
-    - Limits: Video ≤ 250MB, Audio ≤ 50MB, Image ≤ 25MB, Batch total ≤ 500MB.
+    - Limits: Video ≤ 250MB, Audio ≤ 50MB, Image ≤ 25MB.
     - Real-time rejection alerts with helpful guidance and validation success badges.
   - **Forensic Configuration Panel**:
     - Standard Fast Screen (<1.5s sub-second check) vs. Deep Multi-Frame Audit (multi-frame sampled inspection).
@@ -339,16 +334,12 @@ truthlens/
 - **`VerdictBar`** (`src/components/verdict/VerdictBar.tsx`): Signature Green/Amber/Red visual bar with dynamic needle pin marker, threshold percentages, and categorization helper.
 - **`VerdictTeaser`** (`src/components/verdict/VerdictTeaser.tsx`): Interactive simulator demonstrating the VerdictBar across sample video, audio, and face-swap clips, complete with an interactive range slider.
 - **`QuickScanModal`** (`src/components/upload/QuickScanModal.tsx`): Responsive intake modal supporting drag-and-drop media upload, modality badges (Video, Audio, Image), fast vs. deep scan toggle, and privacy assurance.
-- **`AnalysisTabs`** (`src/components/analysis/AnalysisTabs.tsx`): 4-tab switcher supporting Upload Media, Paste Link, Record Live, and Batch Upload with notification counters and icon accents.
 - **`DropzoneUpload`** (`src/components/analysis/DropzoneUpload.tsx`): Drag-and-drop intake zone with format validation for Video, Audio, and Images, active drag visual feedback, and size boundary enforcement.
-- **`PasteLinkUpload`** (`src/components/analysis/PasteLinkUpload.tsx`): URL stream intake with URL scheme validation, demo forensic links, and simulated remote media extraction.
-- **`RecordMediaUpload`** (`src/components/analysis/RecordMediaUpload.tsx`): Live webcam video and microphone audio recorder powered by browser `MediaRecorder` API with timer, HUD overlay, retake controls, and simulated fallback.
-- **`BatchUpload`** (`src/components/analysis/BatchUpload.tsx`): Multi-file intake dropzone with batch queue list, individual item deletion, cumulative size tracking (≤500MB), and format status indicators.
 - **`MediaPreviewCard`** (`src/components/analysis/MediaPreviewCard.tsx`): Rich preview card for video (HTML5 player), audio (interactive waveform visualizer), and image files with SHA-256 integrity hash display, copy button, and expandable forensic metadata.
 - [x] **`ProgressStepper`** (`src/components/analysis/ProgressStepper.tsx`): Animated multi-phase stepper (Uploading & Pre-Hashing, Extracting Signals, Running AI Models, Generating Report) with progress bar, real-time terminal event log, and integrated completed verdict card rendering `ResultView`.
 - [x] **`ResultView`** (`src/components/analysis/ResultView.tsx`): Comprehensive verdict and forensic assessment view featuring the signature large `VerdictBar`, 5 modality breakdown cards with mini progress bars, temporal timeline heatmap of flagged segments, "Why was this flagged?" plain-language diagnostic section, probabilistic legal disclaimer, accessible icons/labels, and quick action to Report Misuse (`#help`).
 - [x] **`ResultPage`** (`src/pages/ResultPage.tsx`): Dedicated result page view with breadcrumb navigation, status beacon, `ResultView` integration, and responsive layout.
-- [x] **`AnalysisPage`** (`src/pages/AnalysisPage.tsx`): Comprehensive scan hub page uniting the 4 tabs, file preview, format & size validation, fast vs. deep scan configuration, modular detection checkboxes, and execution stepper.
+- [x] **`AnalysisPage`** (`src/pages/AnalysisPage.tsx`): Streamlined scan hub page uniting drag-and-drop file upload, file preview, format & size validation, fast vs. deep scan configuration, modular detection checkboxes, and execution stepper.
 - [x] **`HistoryPage`** (`src/pages/HistoryPage.tsx`): Historical analysis registry featuring `HistoryStats` Recharts telemetry and `HistoryTable` with interactive filters, sorting, search, and bulk export.
 - [x] **`PrivacyCenterPage`** (`src/pages/PrivacyCenterPage.tsx`): Hub for data retention controls, client-side metadata auditing, and zero-retention explanations.
 - [x] **`LearnPage`** (`src/pages/LearnPage.tsx`): Deepfake education, neural mechanics, 8 sensory spotting tips, and awareness briefings.
